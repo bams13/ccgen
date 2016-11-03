@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#version en español
 
 import getopt
 import sys
