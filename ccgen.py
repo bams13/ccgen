@@ -20,7 +20,7 @@ def usage():
     print("    -u, --cantidad     Cantidad de tarjetas a generar")
     print("    -c, --ccv          Genera un numero ccv")
     print("    -d, --date         Genera una fecha de expiracion")
-    print("    -g, --guardar <nombre del archivo>      Guarda las tarjetas en un archivo")
+    print("    -g, --guardar      Guarda las tarjetas en un archivo")
     print("")
     print("Recuerda que el formato del bin es: xxxxxxxxxxxxxxxx y consta de 16 digitos")
     print("Todas las tarjetas de credito generadas son validadas(check)")
