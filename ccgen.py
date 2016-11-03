@@ -5,7 +5,7 @@ import sys
 import datetime
 from random import randint
 
-version = "1.0.0"
+version = "1.0.1"
 
 #help arg
 def usage():
