@@ -11,19 +11,19 @@ version = "1.0.1"
 def usage():
     print("ccgen.py version:{}".format(version))
     print("")
-    print("Uso:")
-    print("    ./ccgen.py [-b] <bin> [Opciones]")
-    print("    ./ccgen.py -h      Este mensaje de ayuda")
+    print("Usage:")
+    print("    ./ccgen.py [-b] <bin> [Options]")
+    print("    ./ccgen.py -h      Print this help message")
     print("")
     print("Opciones:")
-    print("    -b, --bin          Formato de bin")
-    print("    -u, --cantidad     Cantidad de tarjetas a generar")
-    print("    -c, --ccv          Genera un numero ccv")
-    print("    -d, --date         Genera una fecha de expiracion")
-    print("    -g, --guardar      Guarda las tarjetas en un archivo")
+    print("    -b, --bin          Bin format")
+    print("    -u, --quantity     Quantity")
+    print("    -c, --ccv          Generate a random ccv")
+    print("    -d, --date         Generate a random exp date")
+    print("    -s, --save         Save the data in a file")
     print("")
-    print("Recuerda que el formato del bin es: xxxxxxxxxxxxxxxx y consta de 16 digitos")
-    print("Todas las tarjetas de credito generadas son validadas(check)")
+    print("Bin format: xxxxxxxxxxxxxxxx")
+    print("All ccs are checked with luhn's algorithm")
     print("")
 
 #Arg parser
@@ -36,16 +36,16 @@ def parseOptions(argv):
     check = False
 
     try:
-        opts, args = getopt.getopt(argv, "h:b:u:gcd",["help", "bin", "guardar", "cantidad", "ccv", "date"])
+        opts, args = getopt.getopt(argv, "h:b:u:scd",["help", "bin", "save", "quantity", "ccv", "date"])
         for opt, arg in opts:
             if opt in ("-h"):
                 usage()
                 sys.exit()
             elif opt in ("-b", "--bin"):
                 bin_format = arg
-            elif opt in ("-g", "--guardar"):
+            elif opt in ("-s", "--save"):
                 saveopt = True
-            elif opt in ("-u", "--cantidad"):
+            elif opt in ("-u", "--quantity"):
                 limit = arg
             elif opt in ("-c", "--ccv"):
                 ccv = True
@@ -58,7 +58,7 @@ def parseOptions(argv):
         usage()
         sys.exit(2)
 
-#CHECKER BASED ON LUHN ALGORITHM
+#CHECKER BASED ON LUHN's ALGORITHM
 def cardLuhnChecksumIsValid(card_number):
     """ checks to make sure that the card passes a luhn mod-10 checksum """
 
@@ -90,9 +90,7 @@ def ccgen(bin_format):
             elif bin_format[i] in ("x"):
                 out_cc = out_cc + str(randint(0,9))
             else:
-                print("\nCaracter no valido en el formato: {}\n".format(bin_format))
-                print("Recuerda que el formato del bin es: xxxxxxxxxxxxxxxx y consta de 16 digitos\n")
-                print("Si deseas ayuda usa: ./ccgen.py -h\n")
+                print("\nInvalid format: {}\n".format(bin_format))
                 sys.exit()
 
         #Generate checksum (last digit) -- IMPLICIT CHECK
@@ -107,9 +105,7 @@ def ccgen(bin_format):
                 checksum_check = out_cc
 
     else:
-        print("\nErr: Inserta un bin valido\n")
-        print("Recuerda que el formato del bin es: xxxxxxxxxxxxxxxx y consta de 16 digitos\n")
-        print("Si deseas ayuda usa: ./ccgen.py -h\n")
+        print("\nErr: invalid bin\n")
         sys.exit()
 
     return(out_cc)
@@ -167,14 +163,13 @@ def main(argv):
                 print(bin_list[i])
 
         if not bin_list:
-            print("\nErr: el bin que insertaste no es valido\n")
+            print("\nErr: invalid format\n")
         else:
-            print("\nTodas las tarjetas fueron validadas(check)")
+            print("\nAll ccs were checked with luhn's algorithm")
 
         if saveopt:
             save(bin_list)
     else:
-        print("\nErr: Inserta un bin\n")
         usage()
         sys.exit()
 
