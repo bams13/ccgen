@@ -7,6 +7,7 @@ from random import randint
 
 version = "1.0.0"
 
+#help arg
 def usage():
     print("ccgen.py version:{}".format(version))
     print("")
@@ -25,19 +26,17 @@ def usage():
     print("Todas las tarjetas de credito generadas son validadas(check)")
     print("")
 
+#Arg parser
 def parseOptions(argv):
-    now = datetime.datetime.now()
     bin_format = ""
     saveopt = False
-    file_name = "ccgen_output_{0}.txt".format(str(now.hour) + str(now.minute) + str(now.second))
     limit = 10
     ccv = False
     date = False
     check = False
 
     try:
-        opts, args = getopt.getopt(argv, "h:b:g:u:cd",["help", "bin", "guardar", "cantidad", "ccv", "date"])
-
+        opts, args = getopt.getopt(argv, "h:b:u:gcd",["help", "bin", "guardar", "cantidad", "ccv", "date"])
         for opt, arg in opts:
             if opt in ("-h"):
                 usage()
@@ -46,11 +45,6 @@ def parseOptions(argv):
                 bin_format = arg
             elif opt in ("-g", "--guardar"):
                 saveopt = True
-                if arg is not "":
-                    if arg[-4:] in ".txt":
-                        file_name = arg
-                    else:
-                        file_name = arg + ".txt"
             elif opt in ("-u", "--cantidad"):
                 limit = arg
             elif opt in ("-c", "--ccv"):
@@ -58,12 +52,13 @@ def parseOptions(argv):
             elif opt in ("-d", "--date"):
                 date = True
 
-        return(bin_format, saveopt, file_name, limit, ccv, date)
+        return(bin_format, saveopt, limit, ccv, date)
 
     except getopt.GetoptError:
         usage()
         sys.exit(2)
 
+#CHECKER BASED ON LUHN ALGORITHM
 def cardLuhnChecksumIsValid(card_number):
     """ checks to make sure that the card passes a luhn mod-10 checksum """
 
@@ -83,9 +78,11 @@ def cardLuhnChecksumIsValid(card_number):
 
     return ( (sum % 10) == 0 )
 
+#GENERATE BASED ON A BIN XXXXXXXXXXXXXXXX
 def ccgen(bin_format):
     out_cc = ""
     if len(bin_format) == 16:
+        #Iteration over the bin
         for i in range(15):
             if bin_format[i] in ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"):
                 out_cc = out_cc + bin_format[i]
@@ -98,6 +95,7 @@ def ccgen(bin_format):
                 print("Si deseas ayuda usa: ./ccgen.py -h\n")
                 sys.exit()
 
+        #Generate checksum (last digit) -- IMPLICIT CHECK
         for i in range(10):
             checksum_check = out_cc
             checksum_check = checksum_check + str(i)
@@ -116,12 +114,16 @@ def ccgen(bin_format):
 
     return(out_cc)
 
-def save(generated, name):
-    f = open(name, 'w')
+#Write on a file that takes a list for the argument
+def save(generated):
+    now = datetime.datetime.now()
+    file_name = "ccgen_output_{0}.txt".format(str(now.day) + str(now.hour) + str(now.minute) + str(now.second))
+    f = open(file_name, 'w')
     for line in generated:
         f.write(line + "\n")
     f.close
 
+#Random ccv gen
 def ccvgen():
     ccv = ""
     num = randint(10,999)
@@ -133,6 +135,7 @@ def ccvgen():
 
     return(ccv)
 
+#Random exp date
 def dategen():
     now = datetime.datetime.now()
     date = ""
@@ -143,9 +146,11 @@ def dategen():
 
     return date
 
+#The main function
 def main(argv):
     bin_list = []
-    (bin_format, saveopt, file_name, limit, ccv, date) = parseOptions(argv)
+    #get arg data
+    (bin_format, saveopt, limit, ccv, date) = parseOptions(argv)
     if bin_format is not "":
         for i in range(int(limit)):
             if ccv and date:
@@ -167,13 +172,11 @@ def main(argv):
             print("\nTodas las tarjetas fueron validadas(check)")
 
         if saveopt:
-            save(bin_list, file_name)
-            print("Encontraras las tarjetas de credito generadas en: {}".format(file_name))
+            save(bin_list)
     else:
         print("\nErr: Inserta un bin\n")
         usage()
         sys.exit()
-
 
 if __name__ == '__main__':
     main(sys.argv[1:])
